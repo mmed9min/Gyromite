@@ -1,4 +1,5 @@
 package VueControleur;
+import modele.deplacements.PilierDeplacementHoriz;
 import modele.plateau.Compteur;
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -6,8 +7,7 @@ import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -32,25 +32,25 @@ public class VueControleurGyromite extends JFrame implements Observer {
     private final int sizeY;
 
     // icones affichées dans la grille
-    private ImageIcon icoHero;
-    private ImageIcon icoVictoire;
-    private ImageIcon icoPerdu;
-    private ImageIcon icoHeroSurCorde;
-    private ImageIcon icoBombe;
-    private ImageIcon icoCarotte;
-    private ImageIcon icoVide;
-    private ImageIcon icoMur;
-    private ImageIcon icoHorizonSol;
-    private ImageIcon icoVerticalSol;
-    private ImageIcon icoPilier;
-    private ImageIcon icoCorde;
-    private ImageIcon icoEnnemi;
+    private ImageIcon iconHero;
+    private ImageIcon iconVictoire;
+    private ImageIcon iconPerdu;
+    private ImageIcon iconHeroSurCorde;
+    private ImageIcon iconBombe;
+    private ImageIcon iconCarotte;
+    private ImageIcon iconVide;
+    private ImageIcon iconMur;
+    private ImageIcon iconHorizonSol;
+    private ImageIcon iconVerticalSol;
+    private ImageIcon iconPilier;
+    private ImageIcon iconCorde;
+    private ImageIcon iconEnnemi;
     private Image Fond;
     private Compteur compteur;
     //private Graphics g;
     
     private JLabel[][] tabJLabel; // cases graphique (au moment du rafraichissement, chaque case va être associée à une icône, suivant ce qui est présent dans le modèle)
-
+    File file = new File("score.txt");
  
     public VueControleurGyromite(Jeu _jeu) {
         sizeX = jeu.SIZE_X;
@@ -73,6 +73,9 @@ public class VueControleurGyromite extends JFrame implements Observer {
                     case KeyEvent.VK_RIGHT : Controle4Directions.getInstance().setDirectionCourante(Direction.droite); break;
                     case KeyEvent.VK_C : PilierDeplacement.getInstance().setCurrentDirection(Direction.bas); break;
                     case KeyEvent.VK_X : PilierDeplacement.getInstance().setCurrentDirection(Direction.haut); break;
+                    case KeyEvent.VK_H: PilierDeplacementHoriz.getInstance().setCurrentDirection(Direction.droite); break;
+                    case KeyEvent.VK_A: PilierDeplacementHoriz.getInstance().setCurrentDirection(Direction.gauche); break;
+
 
                 }
             }
@@ -81,33 +84,25 @@ public class VueControleurGyromite extends JFrame implements Observer {
 
 
     private void chargeIcons() {
-        icoHero = chargeIcon("Images/Hector.png");
-        icoVictoire = chargeIcon("Images/Victoire.png");
-        icoPerdu = chargeIcon("Images/Perdu.png");
-        icoHeroSurCorde = chargeIcon("Images/HeroSurCorde.png");
-        icoVide = chargeIcon("Images/Vide.png");
-        icoPilier = chargeIcon("Images/Colonne.png");
-        icoMur = chargeIcon("Images/Mur.png");
-        icoHorizonSol = chargeIcon("Images/Sol.png");
-        icoVerticalSol = chargeIcon("Images/SolVertical.png");
-        icoBombe = chargeIcon("Images/Bombe.png");
-        icoCarotte = chargeIcon("Images/Radis.png");
-        icoCorde = chargeIcon("Images/Corde.png");
-        icoEnnemi = chargeIcon("Images/Smick.png");
+        iconHero = chargeIcon("Images/Hector.png");
+        iconVictoire = chargeIcon("Images/Victoire.png");
+        iconPerdu = chargeIcon("Images/Perdu.png");
+
+        iconVide = chargeIcon("Images/Vide.png");
+        iconMur = chargeIcon("Images/Mur.png");
+        iconHorizonSol = chargeIcon("Images/Sol.png");
+        iconVerticalSol = chargeIcon("Images/SolVertical.png");
+        iconBombe = chargeIcon("Images/Bombe.png");
+        iconCarotte = chargeIcon("Images/Radis.png");
+        iconCorde = chargeIcon("Images/Corde.png");
+        iconEnnemi = chargeIcon("Images/Smick.png");
+        iconHeroSurCorde = chargeIcon("Images/HeroSurCorde.png");
+
+        iconPilier = chargeIcon("Images/Colonne.png");
+
     }
 
-    private ImageIcon chargeIcon(String urlIcone) {
-        BufferedImage image = null;
 
-        try {
-            image = ImageIO.read(new File(urlIcone));
-        } catch (IOException ex) {
-            Logger.getLogger(VueControleurGyromite.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-
-        return new ImageIcon(image);
-    }
 
     private void placerComposants() {
         setTitle("Gyromite");
@@ -133,14 +128,51 @@ public class VueControleurGyromite extends JFrame implements Observer {
        
         
         compteur = new Compteur();
+
+        int highScore = 0;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line = reader.readLine();
+            while (line != null)                 // read the score file line by line
+            {
+                try {
+                    int score = Integer.parseInt(line.trim());   // parse each line as an int
+                    if (score > highScore)                       // and keep track of the largest
+                    {
+                        highScore = score;
+                        jeu.score = "score "+highScore;
+                        jeu.highestScore = highScore;
+                    }
+                } catch (NumberFormatException e1) {
+                    // ignore invalid scores
+                    System.out.println(e1);
+                    //System.err.println("ignoring invalid score: " + line);
+                }
+                line = reader.readLine();
+            }
+            reader.close();
+
+        } catch (IOException ex) {
+            System.err.println("ERROR reading scores from file");
+        }
        
     }
-    
 
-    
-    /**
-     * Il y a une grille du côté du modèle ( jeu.getGrille() ) et une grille du côté de la vue (tabJLabel)
-     */
+
+    private ImageIcon chargeIcon(String urlIcone) {
+        BufferedImage image = null;
+
+        try {
+            image = ImageIO.read(new File(urlIcone));
+        } catch (IOException ex) {
+            Logger.getLogger(VueControleurGyromite.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+
+        return new ImageIcon(image);
+    }
+
+
     private void updateAffichage() {
 
         for (int x = 0; x < sizeX; x++) {
@@ -148,33 +180,33 @@ public class VueControleurGyromite extends JFrame implements Observer {
               
                  if (jeu.getGrille()[x][y] instanceof Heros) { // si la grille du modèle contient un Pacman, on associe l'icône Pacman du côté de la vue
                     // System.out.println("Héros !");
-                    if(jeu.statut=="VICTOIRE")
-                    {tabJLabel[x][y].setIcon(icoVictoire);}
-                    else if(jeu.statut=="Perdu")
-                        {tabJLabel[x][y].setIcon(icoPerdu);}
+                    if(jeu.statut=="Victoire")
+                    {tabJLabel[x][y].setIcon(iconVictoire);}
+                    else if(jeu.statut=="Jeu Perdu !!")
+                        {tabJLabel[x][y].setIcon(iconPerdu);}
                        else if(jeu.HeroSurCorde)
-                        {tabJLabel[x][y].setIcon(icoHeroSurCorde);}
+                        {tabJLabel[x][y].setIcon(iconHeroSurCorde);}
                     else
-                    tabJLabel[x][y].setIcon(icoHero);
+                    tabJLabel[x][y].setIcon(iconHero);
                 } else if (jeu.getGrille()[x][y] instanceof Mur) {
-                    tabJLabel[x][y].setIcon(icoMur);
+                    tabJLabel[x][y].setIcon(iconMur);
                 } else if (jeu.getGrille()[x][y] instanceof Pilier) {
-                    tabJLabel[x][y].setIcon(icoPilier);
+                    tabJLabel[x][y].setIcon(iconPilier);
                 } else if (jeu.getGrille()[x][y] instanceof HorizonSol) {
-                    tabJLabel[x][y].setIcon(icoHorizonSol);}
+                    tabJLabel[x][y].setIcon(iconHorizonSol);}
                   else if (jeu.getGrille()[x][y] instanceof VerticalSol) {
-                    tabJLabel[x][y].setIcon(icoVerticalSol);}
+                    tabJLabel[x][y].setIcon(iconVerticalSol);}
                  else if (jeu.getGrille()[x][y] instanceof Bombe){ 
-                    tabJLabel[x][y].setIcon(icoBombe);
+                    tabJLabel[x][y].setIcon(iconBombe);
                  }
                    else if (jeu.getGrille()[x][y] instanceof Corde){ 
-                    tabJLabel[x][y].setIcon(icoCorde);
+                    tabJLabel[x][y].setIcon(iconCorde);
                  }
                  else if (jeu.getGrille()[x][y] instanceof Carotte){
-                    tabJLabel[x][y].setIcon(icoCarotte);
+                    tabJLabel[x][y].setIcon(iconCarotte);
                  }
                  else if (jeu.getGrille()[x][y] instanceof Bot){
-                    tabJLabel[x][y].setIcon(icoEnnemi);
+                    tabJLabel[x][y].setIcon(iconEnnemi);
                  }
                  else if (x==0 && y==0) {
                      String timer = this.compteur.getStr();
@@ -200,29 +232,38 @@ public class VueControleurGyromite extends JFrame implements Observer {
                                            
                  }
                     else if (x==3 && y==0) {
-                     
-                     
-               
-                     tabJLabel[3][0].setText(jeu.score);
+
+
+
+                     tabJLabel[3][0].setText("Score "+jeu.NbrScore);
                       tabJLabel[3][0].setForeground(Color.blue);
                                            
-                 }    else if (x==4 && y==0) {
+                 }
+                    else if (x==4 && y==0) {
                      
                      
                
                      tabJLabel[4][0].setText(jeu.statut);
                      tabJLabel[4][0].setForeground(Color.green);
                                            
+                 }    else if (x==5 && y==0) {
+
+
+
+                     tabJLabel[5][0].setText("Best "+jeu.highestScore);
+                     tabJLabel[5][0].setForeground(Color.blue);
+
                  }
+
                 else {
-                    tabJLabel[x][y].setIcon(icoVide);
+                    tabJLabel[x][y].setIcon(iconVide);
                 }    
          }       
     }
   
     
     }
- 
+
 
     @Override
     public void update(Observable o, Object arg) {
@@ -234,44 +275,63 @@ public class VueControleurGyromite extends JFrame implements Observer {
        
         
         updateAffichage();
-        if (jeu.statut=="Perdu")
-        {System.out.println("PERDU LOL");
+        if (jeu.statut=="Jeu Perdu !!")
+        {
             updateAffichage();
             jeu.encours=false;}
         if(jeu.compteur_bombes >=4 || this.compteur.getCompteurDuTemps()==0)
-        {System.out.println("JEU FINI");
+        {System.out.println("Jeu Fini !!");
         jeu.scorechiffre=jeu.scorechiffre+(this.compteur.getCompteurDuTemps()*10);
-        jeu.score="Score " + jeu.scorechiffre;
+
        
-         jeu.statut="VICTOIRE";
+         jeu.statut="Victoire !";
         updateAffichage();
         jeu.encours=false;}
-        
+
+
+
         if(this.compteur.getCompteurDuTemps()==0)
         {
-            System.out.println("JEU FINI");
+
         jeu.scorechiffre=jeu.scorechiffre+(this.compteur.getCompteurDuTemps()*10);
-        jeu.score="Score " + jeu.scorechiffre;
-        jeu.statut="Perdu";
+
+        jeu.statut="Jeu Perdu!!";
         updateAffichage();
         jeu.encours=false;
+
+
         }
-        
-           
-    }
-    
-    
-       /*
-        SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        mettreAJourAffichage();
-                    }
-                }); 
-        */
+
+        if (jeu.NbrScore > jeu.highestScore)
+        {
+            System.out.println("You now have the new high score! The previous high score was " + jeu.highestScore);
+            try {
+                BufferedWriter output = new BufferedWriter(new FileWriter(file, true));
+                output.newLine();
+                output.append("" + jeu.NbrScore);
+                output.close();
+
+            } catch (IOException ex1) {
+                System.out.printf("ERROR writing score to file: %s\n", ex1);
+            }
+        }
+        } else if (jeu.NbrScore == jeu.highestScore) {
+            System.out.println("You tied the high score!");
+        } else {
+            System.out.println("The all time high score was " + jeu.highestScore);
+        }
 
     }
 
 
-}
+
+
+    
+    
+
+
+    }
+
+
+
 ;

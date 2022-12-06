@@ -5,15 +5,10 @@
  */
 package modele.plateau;
 
-import modele.deplacements.Controle4Directions;
-import modele.deplacements.Direction;
-import modele.deplacements.Gravite;
-import modele.deplacements.Ordonnanceur;
-import modele.deplacements.PilierDeplacement;
+import modele.deplacements.*;
 
 import java.awt.Point;
 import java.util.HashMap;
-import modele.deplacements.IA;
 
 /** Actuellement, cette classe gère les postions
  * (ajouter conditions de victoire, chargement du plateau, etc.)
@@ -29,7 +24,16 @@ public class Jeu {
 
          public int scorechiffre=0;
         public String score = "Score " + scorechiffre;
-        public String statut="Jeu en cours";
+
+        public int NbrScore = scorechiffre;
+
+    public int highestScore = scorechiffre;
+
+    public void setScore(String score) {
+        this.score = score;
+    }
+
+    public String statut="Jeu en cours";
   
    // Jeu.compteur_bombes=0;
 
@@ -47,6 +51,12 @@ public class Jeu {
     private Pilier cube1;
     private Pilier cube2;
     private Pilier cube3;
+
+    private Pilier cube4;
+
+    private Pilier cube5;
+
+    private Pilier cube6;
 
     private HashMap<Entite, Point> map = new  HashMap<Entite, Point>(); // permet de récupérer la position d'une entité à partir de sa référence
     private Entite[][] grilleEntites = new Entite[SIZE_X][SIZE_Y]; // permet de récupérer une entité à partir de ses coordonnées
@@ -99,6 +109,13 @@ public class Jeu {
         cube3 = new Pilier(this);
         addEntite(cube3, 17,8);
 
+
+        cube4 = new Pilier(this);
+        addEntite(cube4, 3,3);
+        cube5 = new Pilier(this);
+        addEntite(cube5, 4,3);
+        cube6 = new Pilier(this);
+        addEntite(cube6, 5,3);
         smick1 = new Bot(this);
         addEntite (smick1, 2, 3);
 
@@ -121,6 +138,10 @@ public class Jeu {
         PilierDeplacement.getInstance().addEntiteDynamique(cube1);
         PilierDeplacement.getInstance().addEntiteDynamique(cube2);
         PilierDeplacement.getInstance().addEntiteDynamique(cube3);
+        PilierDeplacementHoriz.getInstance().addEntiteDynamique(cube4);
+        PilierDeplacementHoriz.getInstance().addEntiteDynamique(cube5);
+        PilierDeplacementHoriz.getInstance().addEntiteDynamique(cube6);
+
 
 
         
@@ -144,7 +165,7 @@ public class Jeu {
         }
 
         
-        for (int b= 5; b< SIZE_X;b++)
+        for (int b= 6; b< SIZE_X;b++)
         {addEntite(new Mur(this), b, 0);
         
         }
@@ -161,9 +182,9 @@ public class Jeu {
         
         addEntite(new HorizonSol(this),1,3);
 
-        addEntite(new HorizonSol(this),3,3);
+        /*addEntite(new HorizonSol(this),3,3);
           addEntite(new HorizonSol(this),4,3);
-        addEntite(new HorizonSol(this),5,3);
+        addEntite(new HorizonSol(this),5,3);*/
            
              addEntite(new HorizonSol(this),6,5);
              addEntite (new Corde(this), 6, 3);
@@ -352,11 +373,13 @@ public class Jeu {
         compteur_bombes++;
         scorechiffre=scorechiffre+100;
         score = "Score " + scorechiffre;
+        NbrScore = scorechiffre;
           //System.out.println(score);
         System.out.println(compteur_bombes);}
         if( grilleEntites[pCible.x][pCible.y] instanceof Carotte){
       scorechiffre=scorechiffre+500;
       score = "Score " + scorechiffre;
+      NbrScore = scorechiffre;
       System.out.println(scorechiffre);
        ;}
         if( grilleEntites[pCible.x][pCible.y] instanceof Bot && e instanceof Pilier)

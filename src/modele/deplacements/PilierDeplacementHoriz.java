@@ -5,8 +5,8 @@ import modele.plateau.Entite;
 import modele.plateau.EntiteDynamique;
 
 
-public class PilierDeplacement extends RealisateurDeDeplacement {
-private Direction currentDirection;
+public class PilierDeplacementHoriz extends RealisateurDeDeplacement {
+    private Direction currentDirection;
 
     private static PilierDeplacement c3D;
 
@@ -26,20 +26,18 @@ private Direction currentDirection;
         for (EntiteDynamique e : lstEntitesDynamiques) {
             if (currentDirection != null)
                 switch (currentDirection) {
-                    case haut:  Entite eHaut = e.regarderDansLaDirection(Direction.haut);
-                        if (eHaut == null || eHaut instanceof Pilier){
-                        if (e.avancerDirectionChoisie(Direction.haut)){
+                    case droite:  Entite eDroite = e.regarderDansLaDirection(Direction.droite);
+                        if (eDroite == null || eDroite instanceof Pilier){
+                            if (e.avancerDirectionChoisie(Direction.droite)){
                                 ret = true;
-                        }break;}
-                    case bas:
-                       Entite eBas = e.regarderDansLaDirection(Direction.bas);
-            if (eBas == null || eBas.peutEtreEcrase()){
-                            if(e.avancerDirectionChoisie(Direction.bas)) {
+                            }break;}
+                    case gauche:
+                        Entite eGauche = e.regarderDansLaDirection(Direction.gauche);
+                        if (eGauche == null || eGauche.peutEtreEcrase()){
+                            if(e.avancerDirectionChoisie(Direction.gauche)) {
                                 ret = true;
                             } break;
-                }
-
-            }
+                        }}
         }
 
         return ret;
