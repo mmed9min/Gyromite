@@ -10,7 +10,7 @@ public class Compteur implements Runnable{
 	// CONSTRUCTEUR
 	public Compteur(){
 
-		this.compteurDuTemps = 15;
+		this.compteurDuTemps = 150;
 		this.str = "TIME: 100";
 		
 		Thread compteur = new Thread(this);

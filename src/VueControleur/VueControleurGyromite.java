@@ -1,5 +1,4 @@
 package VueControleur;
-import modele.deplacements.PilierDeplacementHoriz;
 import modele.plateau.Compteur;
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -73,8 +72,8 @@ public class VueControleurGyromite extends JFrame implements Observer {
                     case KeyEvent.VK_RIGHT : Controle4Directions.getInstance().setDirectionCourante(Direction.droite); break;
                     case KeyEvent.VK_C : PilierDeplacement.getInstance().setCurrentDirection(Direction.bas); break;
                     case KeyEvent.VK_X : PilierDeplacement.getInstance().setCurrentDirection(Direction.haut); break;
-                    case KeyEvent.VK_H: PilierDeplacementHoriz.getInstance().setCurrentDirection(Direction.droite); break;
-                    case KeyEvent.VK_A: PilierDeplacementHoriz.getInstance().setCurrentDirection(Direction.gauche); break;
+                    case KeyEvent.VK_H: PilierDeplacement.getInstance().setCurrentDirection(Direction.droite); break;
+                    case KeyEvent.VK_A: PilierDeplacement.getInstance().setCurrentDirection(Direction.gauche); break;
 
 
                 }

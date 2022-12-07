@@ -138,9 +138,9 @@ public class Jeu {
         PilierDeplacement.getInstance().addEntiteDynamique(cube1);
         PilierDeplacement.getInstance().addEntiteDynamique(cube2);
         PilierDeplacement.getInstance().addEntiteDynamique(cube3);
-        PilierDeplacementHoriz.getInstance().addEntiteDynamique(cube4);
-        PilierDeplacementHoriz.getInstance().addEntiteDynamique(cube5);
-        PilierDeplacementHoriz.getInstance().addEntiteDynamique(cube6);
+        PilierDeplacement.getInstance().addEntiteDynamique2(cube4);
+        PilierDeplacement.getInstance().addEntiteDynamique2(cube5);
+        PilierDeplacement.getInstance().addEntiteDynamique2(cube6);
 
 
 
@@ -153,6 +153,7 @@ public class Jeu {
         
         ordonnanceur.add(Controle4Directions.getInstance());
        ordonnanceur.add(PilierDeplacement.getInstance());
+
        ordonnanceur.add(IA.getInstance());
       
 
@@ -267,9 +268,7 @@ public class Jeu {
         return objetALaPosition(calculerPointCible(positionEntite, d));
     }
     
-    /** Si le déplacement de l'entité est autorisé (pas de mur ou autre entité), il est réalisé
-     * Sinon, rien n'est fait.
-     */
+
     public boolean deplacerEntite(Entite e, Direction d) {
         boolean retour = false;
         
